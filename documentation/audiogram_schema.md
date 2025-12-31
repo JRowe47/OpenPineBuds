@@ -57,5 +57,7 @@ by every listening mode to avoid refitting per mode:
   ambient, music, theater, conversation, calls, and tinnitus-masking modes.
 - Mode-specific EQ presets apply as overlays after the base curve, preserving
   the same underlying compensation everywhere.
-- Final limiters remain engaged after the overlays to maintain safe gain caps
-  and smooth transitions between modes.
+- Final soft-knee limiters (knee ~15 dB, cap 18 dB, 5 ms attack/50 ms release)
+  remain engaged after the overlays to maintain safe gain caps and are
+  crossfaded over 20 ms between modes to avoid artifacts. See
+  `documentation/audiogram_safety.md` for detailed safety-layer behavior.
