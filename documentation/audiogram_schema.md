@@ -46,3 +46,16 @@ maps to the numeric `schema_version` stored in `AudiogramProfile` (for example,
    firmware enforces the 32-point maximum regardless of this hint.
 5. Validate that all frequencies remain within 100–12000 Hz and are strictly
    increasing without duplicates.
+
+## Application Across Listening Modes
+
+The firmware computes a single calibrated base compensation curve per ear from
+the validated audiogram and interpolation pipeline. This base curve is shared
+by every listening mode to avoid refitting per mode:
+
+- The base curve is calibrated per bud and cached as the starting point for
+  ambient, music, theater, conversation, calls, and tinnitus-masking modes.
+- Mode-specific EQ presets apply as overlays after the base curve, preserving
+  the same underlying compensation everywhere.
+- Final limiters remain engaged after the overlays to maintain safe gain caps
+  and smooth transitions between modes.

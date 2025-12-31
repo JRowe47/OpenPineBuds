@@ -19,3 +19,4 @@ This repository does not currently include nested agent instructions. Follow the
 
 ## Milestones
 - Add a milestone for “Arbitrary Audiogram Points Support” with acceptance criteria that include validation of arbitrary points, interpolation onto the DSP grid with smoothing, safe clamping of gains, and confirmation that legacy octave-only profiles behave the same as before.
+- Base audiogram compensation is now shared across ambient, music, theater, conversation, calls, and tinnitus-masking modes after per-bud calibration; limiter behavior still needs validation once safety clamps are finalized.
