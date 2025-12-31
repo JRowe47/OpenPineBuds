@@ -13,7 +13,7 @@ This repository does not currently include nested agent instructions. Follow the
 ## Feature checklist
 - [ ] Arbitrary audiogram frequency-point ingestion (per ear)
 - [ ] Validation + schema versioning/migration
-- [ ] Log-frequency interpolation + smoothing of target gain
+- [x] Log-frequency interpolation + smoothing of target gain
 - [ ] Fitting target gain to available EQ sections (IIR/biquads) per ear
 - [ ] Regression: standard octave-only audiograms remain supported and produce equivalent results
 

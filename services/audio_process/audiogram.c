@@ -14,6 +14,7 @@
 #define AUDIOGRAM_MIN_GAIN_DB -12.0f
 #define AUDIOGRAM_HALF_GAIN 0.5f
 #define SMOOTHING_WINDOW 3
+#define SMOOTHING_PASSES 2
 
 static float clampf(float v, float lo, float hi) {
   if (v < lo)
@@ -118,7 +119,7 @@ static float map_threshold_to_gain(int16_t threshold_db_hl) {
   return clampf(gain, AUDIOGRAM_MIN_GAIN_DB, AUDIOGRAM_MAX_GAIN_DB);
 }
 
-static void smooth_gain(float *gains, size_t count) {
+static void smooth_gain_once(const float *in, float *out, size_t count) {
   if (count < 3)
     return;
   float tmp[64];
@@ -132,18 +133,35 @@ static void smooth_gain(float *gains, size_t count) {
       int idx = (int)i + win;
       if (idx < 0 || (size_t)idx >= count)
         continue;
-      acc += gains[idx];
+      acc += in[idx];
       n += 1.0f;
     }
     tmp[i] = acc / (n > 0.0f ? n : 1.0f);
   }
-  memcpy(gains, tmp, count * sizeof(float));
+  memcpy(out, tmp, count * sizeof(float));
+}
+
+static void smooth_gain(float *gains, size_t count) {
+  float stage[64];
+
+  if (count < 3 || count > sizeof(stage) / sizeof(stage[0]))
+    return;
+
+  memcpy(stage, gains, count * sizeof(float));
+  for (int pass = 0; pass < SMOOTHING_PASSES; ++pass) {
+    float tmp[64];
+    smooth_gain_once(stage, tmp, count);
+    memcpy(stage, tmp, count * sizeof(float));
+  }
+  memcpy(gains, stage, count * sizeof(float));
 }
 
 int audiogram_interpolate_gain(const AudiogramEarProfile *ear,
                                const float *target_freqs, size_t target_count,
                                float *out_gain_db) {
   uint8_t point_count = 0;
+  float ear_log[AUDIOGRAM_MAX_POINTS_PER_EAR];
+  float ear_gain[AUDIOGRAM_MAX_POINTS_PER_EAR];
 
   if (!ear || !target_freqs || !out_gain_db || target_count == 0)
     return -1;
@@ -152,15 +170,18 @@ int audiogram_interpolate_gain(const AudiogramEarProfile *ear,
 
   point_count = ear->threshold_count ? ear->threshold_count : ear->point_count;
 
+  for (uint8_t i = 0; i < point_count; ++i) {
+    ear_log[i] = log10f_safe((float)ear->frequencies_hz[i]);
+    ear_gain[i] = map_threshold_to_gain(ear->thresholds_db_hl[i]);
+  }
+
   for (size_t i = 0; i < target_count; ++i) {
     float tfreq = target_freqs[i];
     float tlog = log10f_safe(tfreq);
-    float lower_gain = map_threshold_to_gain(ear->thresholds_db_hl[0]);
-    float upper_gain = map_threshold_to_gain(
-        ear->thresholds_db_hl[point_count - 1]);
-    float lower_log = log10f_safe(ear->frequencies_hz[0]);
-    float upper_log =
-        log10f_safe(ear->frequencies_hz[point_count - 1]);
+    float lower_gain = ear_gain[0];
+    float upper_gain = ear_gain[point_count - 1];
+    float lower_log = ear_log[0];
+    float upper_log = ear_log[point_count - 1];
 
     if (tfreq <= ear->frequencies_hz[0]) {
       out_gain_db[i] = lower_gain;
@@ -172,15 +193,13 @@ int audiogram_interpolate_gain(const AudiogramEarProfile *ear,
     }
 
     for (uint8_t j = 1; j < point_count; ++j) {
-      uint16_t f0 = ear->frequencies_hz[j - 1];
-      uint16_t f1 = ear->frequencies_hz[j];
-      if (tfreq >= f0 && tfreq <= f1) {
-        float log0 = log10f_safe(f0);
-        float log1 = log10f_safe(f1);
-        float g0 = map_threshold_to_gain(ear->thresholds_db_hl[j - 1]);
-        float g1 = map_threshold_to_gain(ear->thresholds_db_hl[j]);
-        float ratio =
-            (tlog - log0) / ((log1 - log0) > 0.0f ? (log1 - log0) : 1.0f);
+      float log0 = ear_log[j - 1];
+      float log1 = ear_log[j];
+      if (tlog >= log0 && tlog <= log1) {
+        float g0 = ear_gain[j - 1];
+        float g1 = ear_gain[j];
+        float denom = (log1 - log0) > 0.0f ? (log1 - log0) : 1.0f;
+        float ratio = (tlog - log0) / denom;
         out_gain_db[i] = g0 + (g1 - g0) * ratio;
         break;
       }
