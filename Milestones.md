@@ -5,7 +5,7 @@
   - Extend the audiogram configuration schema (version bump) to allow arbitrary per-ear frequency lists with validation and migration guidance.
   - Add firmware validation: strictly increasing, unique frequencies in the 100–12000 Hz range with matching dB HL thresholds and per-ear point count >= 2.
   - Implemented log-frequency interpolation and multi-pass smoothing to map audiogram points onto the internal DSP grid; fit target gains into available EQ/biquad sections per ear with section-budget awareness and safe fallbacks.
-  - Ensure the base audiogram compensation feeds all listening modes (ambient, music, theater, conversation, calls, tinnitus masking) and coexists with per-bud calibration and limiters.
+  - Ensure the base audiogram compensation feeds all listening modes (ambient, music, theater, conversation, calls, tinnitus masking) and coexists with per-bud calibration and limiters, with mode-specific EQ applied as an overlay rather than refitting per mode.
   - Preserve backward compatibility so standard octave-only audiograms still load and sound the same within tolerance.
 - **Acceptance criteria:**
   - Valid configs with non-octave points (e.g., 750, 1500, 3000 Hz) load and render without artifacts; invalid configs (duplicates, unsorted, out-of-range, length mismatches) are rejected safely.
