@@ -11,10 +11,10 @@ This repository does not currently include nested agent instructions. Follow the
 - The interpolated target curve feeds the IIR/biquad fitting pipeline per ear so that all listening modes share the same base compensation layer.
 
 ## Feature checklist
-- [ ] Arbitrary audiogram frequency-point ingestion (per ear)
-- [ ] Validation + schema versioning/migration
+- [x] Arbitrary audiogram frequency-point ingestion (per ear)
+- [x] Validation + schema versioning/migration
 - [x] Log-frequency interpolation + smoothing of target gain
-- [ ] Fitting target gain to available EQ sections (IIR/biquads) per ear
+- [x] Fitting target gain to available EQ sections (IIR/biquads) per ear
 - [ ] Regression: standard octave-only audiograms remain supported and produce equivalent results
 
 ## Milestones
