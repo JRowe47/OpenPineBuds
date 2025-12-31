@@ -19,7 +19,11 @@ extern "C" {
 typedef struct {
   uint16_t frequencies_hz[AUDIOGRAM_MAX_POINTS_PER_EAR];
   int16_t thresholds_db_hl[AUDIOGRAM_MAX_POINTS_PER_EAR];
+  // `point_count` tracks the number of frequency samples provided. When
+  // `threshold_count` is zero, it is treated as matching `point_count` for
+  // backward compatibility with legacy callers that only fill one count.
   uint8_t point_count;
+  uint8_t threshold_count;
 } AudiogramEarProfile;
 
 typedef struct {
