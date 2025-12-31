@@ -122,7 +122,7 @@ static float map_threshold_to_gain(int16_t threshold_db_hl) {
 static void smooth_gain_once(const float *in, float *out, size_t count) {
   if (count < 3)
     return;
-  float tmp[64];
+  float tmp[AUDIOGRAM_MAX_TARGET_BINS];
   if (count > sizeof(tmp) / sizeof(tmp[0]))
     return;
   for (size_t i = 0; i < count; ++i) {
@@ -142,14 +142,14 @@ static void smooth_gain_once(const float *in, float *out, size_t count) {
 }
 
 static void smooth_gain(float *gains, size_t count) {
-  float stage[64];
+  float stage[AUDIOGRAM_MAX_TARGET_BINS];
 
   if (count < 3 || count > sizeof(stage) / sizeof(stage[0]))
     return;
 
   memcpy(stage, gains, count * sizeof(float));
   for (int pass = 0; pass < SMOOTHING_PASSES; ++pass) {
-    float tmp[64];
+    float tmp[AUDIOGRAM_MAX_TARGET_BINS];
     smooth_gain_once(stage, tmp, count);
     memcpy(stage, tmp, count * sizeof(float));
   }
@@ -165,6 +165,8 @@ int audiogram_interpolate_gain(const AudiogramEarProfile *ear,
 
   if (!ear || !target_freqs || !out_gain_db || target_count == 0)
     return -1;
+  if (target_count > AUDIOGRAM_MAX_TARGET_BINS)
+    return -3;
   if (!audiogram_validate_ear(ear, NULL, 0))
     return -2;
 
@@ -180,8 +182,6 @@ int audiogram_interpolate_gain(const AudiogramEarProfile *ear,
     float tlog = log10f_safe(tfreq);
     float lower_gain = ear_gain[0];
     float upper_gain = ear_gain[point_count - 1];
-    float lower_log = ear_log[0];
-    float upper_log = ear_log[point_count - 1];
 
     if (tfreq <= ear->frequencies_hz[0]) {
       out_gain_db[i] = lower_gain;
@@ -222,6 +222,9 @@ int audiogram_build_iir_cfg(const AudiogramProfile *profile, bool left_ear,
                                       8000.f, 10000.f};
   const size_t target_count = sizeof(target_grid) / sizeof(target_grid[0]);
   float gains[target_count];
+
+  if (target_count > AUDIOGRAM_MAX_TARGET_BINS)
+    return -3;
   const AudiogramEarProfile *ear = left_ear ? &profile->left : &profile->right;
   int written =
       audiogram_interpolate_gain(ear, target_grid, target_count, gains);
