@@ -32,9 +32,9 @@ Combined backlog sourced from the previous to-do lists, feature specs (A–K), a
 - [x] Profile interpolation and fitting stages to confirm performance constraints are met.
 
 ## M4 — Mode Framework (Ambient/Music/Theater) (Feature D)
-- [ ] Add mode overlay presets (ambient/music/theater) in configuration and pipeline switch logic, including ambient mix ratios, wind suppression hook, and ducking option.
-- [ ] Ensure mode transitions ramp gains, preserve headroom, and respect audiogram and limiter placement.
-- [ ] Validate ambient mix behavior, music/theater overlays, and wind suppression acceptance criteria.
+- [x] Add mode overlay presets (ambient/music/theater) in configuration and pipeline switch logic, including ambient mix ratios, wind suppression hook, and ducking option.
+- [x] Ensure mode transitions ramp gains, preserve headroom, and respect audiogram and limiter placement.
+- [x] Validate ambient mix behavior, music/theater overlays, and wind suppression acceptance criteria.
 
 ## M5 — Call Pipeline (Uplink/Downlink) (Feature F)
 - [ ] Wire downlink compressor + presence EQ + limiter; apply audiogram only to downlink.
