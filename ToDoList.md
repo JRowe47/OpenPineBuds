@@ -38,9 +38,9 @@ Combined backlog sourced from the previous to-do lists, feature specs (A–K), a
 - [x] Validate ambient mix behavior, music/theater overlays, and wind suppression acceptance criteria.
 
 ## M5 — Call Pipeline (Uplink/Downlink) (Feature F)
-- [ ] Wire downlink compressor + presence EQ + limiter; apply audiogram only to downlink.
-- [ ] Wire uplink HPF + AGC + wind/NR + limiter (no audiogram) within HFP paths.
-- [ ] Validate panic-off disables ambient/tinnitus and keeps uplink unclipped; add call-mode tests/logs.
+- [x] Wire downlink compressor + presence EQ + limiter; apply audiogram only to downlink.
+- [x] Wire uplink HPF + AGC + wind/NR + limiter (no audiogram) within HFP paths.
+- [x] Validate panic-off disables ambient/tinnitus and keeps uplink unclipped; add call-mode tests/logs.
 
 ## M6 — Ambient Pipeline Improvements (Features E, G, H)
 - [ ] Implement wind detector with hysteresis (low-band energy/coherence) and adjust HPF/gain/NR thresholds.
