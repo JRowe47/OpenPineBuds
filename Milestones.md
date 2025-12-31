@@ -23,8 +23,8 @@ Sequenced plan with measurable acceptance criteria. Limiter last, calibration-fi
 - **Acceptance:** Mode changes apply overlays without clipping; ambient mix obeys ratios; theater disables ambient; limiter remains last.
 
 ## M5 — Call pipeline (uplink/downlink)
-- **Scope:** Downlink speech compressor + presence EQ + limiter; uplink HPF + AGC + wind/NR + limiter (no audiogram); panic-off behavior validated.
-- **Acceptance:** Downlink loudness consistent; uplink protected from clipping and wind bursts; panic-off mutes ambient/tinnitus instantly.
+- **Scope:** Downlink chain locks ordering to calibration EQ → audiogram EQ → presence EQ → speech compressor → limiter, with audiogram applied only to the listener path. Uplink chain routes mic → HPF (wind-aware corner) → wind/NR gate → AGC → optional ENC/beamforming hook → limiter and explicitly blocks audiogram injection. Panic-off behavior and call logging mirror media modes while muting ambient/tinnitus immediately.
+- **Acceptance:** Downlink loudness stays consistent across talkers with limiter engagement comparable to media playback; uplink stays unclipped during wind bursts or loud speech (HPF + AGC + limiter verified); panic-off leaves uplink stable, disables ambient/tinnitus instantly, and keeps limiter last. See `documentation/call_pipeline.md` for validation notes.
 
 ## M6 — Ambient pipeline improvements (wind/NR/conversation/outdoors)
 - **Scope:** Wind detector with hysteresis; NR tiers per mode; conversational speech emphasis (1–4 kHz) with low latency; outdoors conservative HF gains; optional ambient music mix.

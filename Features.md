@@ -109,9 +109,12 @@ Provides downlink and uplink processing pipelines tailored for voice calls.
 ### Config parameters
 - Downlink: speech-focused compressor settings, presence shaping EQ overlay, limiter parameters.
 - Uplink: HPF cutoff, AGC thresholds, wind suppression/NR toggles, limiter parameters, ENC enable flag.
+- Chain ordering: Downlink is calibration EQ → audiogram EQ → presence EQ → compressor → limiter; uplink is mic → HPF (wind-aware
+  corner) → wind/NR gate → AGC → optional ENC/beamforming slot → limiter.
 ### Constraints
 - Audiogram applies to downlink only; uplink must avoid coloration from audiogram.
 - Preserve intelligibility; avoid “underwater” artifacts; limiter last in both chains.
+- AGC headroom targets leave 6–8 dB before the limiter so panic-off or wind bursts do not clip.
 ### Acceptance criteria & tests
 - Downlink maintains loudness consistency across voices with limiter protection.
 - Uplink avoids clipping and manages wind/noise; verifies panic-off mutes ambient/tinnitus immediately.
