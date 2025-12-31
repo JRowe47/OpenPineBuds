@@ -10,14 +10,17 @@
 ### Example audiogram configuration (JSON)
 ```json
 {
-  "schema": "audiogram/v2",
+  "schema": "audiogram/v3",
   "left": {
-    "frequencies_hz": [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000],
-    "thresholds_db_hl": [5, 10, 15, 20, 25, 25, 30, 35, 40, 45, 50]
+    "frequencies_hz": [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4500, 6000, 8000, 12000],
+    "thresholds_db_hl": [5, 10, 15, 20, 25, 25, 30, 35, 42, 45, 50, 55]
   },
   "right": {
-    "frequencies_hz": [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000],
-    "thresholds_db_hl": [0, 5, 10, 15, 20, 20, 25, 30, 35, 40, 45]
+    "frequencies_hz": [250, 500, 1000, 2000, 3000, 4000, 6000, 9000],
+    "thresholds_db_hl": [0, 5, 12, 18, 22, 30, 38, 45]
   }
 }
 ```
+
+See `documentation/audiogram_schema.md` for the full v3 schema details and
+migration steps from v2 octave-only profiles.

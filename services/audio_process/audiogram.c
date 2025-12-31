@@ -83,6 +83,13 @@ bool audiogram_validate_profile(const AudiogramProfile *profile, char *reason,
       snprintf(reason, reason_size, "%s", "profile is NULL");
     return false;
   }
+  if (profile->schema_version != 0 &&
+      (profile->schema_version < AUDIOGRAM_MIN_SCHEMA_VERSION ||
+       profile->schema_version > AUDIOGRAM_SCHEMA_VERSION)) {
+    if (reason && reason_size)
+      snprintf(reason, reason_size, "%s", "unsupported schema version");
+    return false;
+  }
   if (!audiogram_validate_ear(&profile->left, reason, reason_size)) {
     return false;
   }
