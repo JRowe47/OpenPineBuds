@@ -23,6 +23,7 @@ extern "C" {
 #include "stdint.h"
 #include "iir_process.h"
 #include "fir_process.h"
+#include "audiogram.h"
 
 typedef enum {
     AUDIO_EQ_TYPE_SW_IIR = 0,
@@ -37,6 +38,11 @@ int audio_process_run(uint8_t *buf, uint32_t len);
 int audio_process_close(void);
 
 int audio_eq_set_cfg(const FIR_CFG_T *fir_cfg,const IIR_CFG_T *iir_cfg,AUDIO_EQ_TYPE_T audio_eq_type);
+
+// Apply an audiogram profile to the software EQ path. The profile is validated
+// and translated into per-ear IIR configurations using log-frequency
+// interpolation and smoothing. Returns 0 on success.
+int audio_process_apply_audiogram(const AudiogramProfile *profile);
 
 #ifdef USB_EQ_TUNING
 void audio_eq_usb_eq_update (void);
