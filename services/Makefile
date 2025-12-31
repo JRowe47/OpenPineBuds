@@ -1,6 +1,7 @@
 obj-y := audio_dump/ \
          audioflinger/ \
          audio_process/ \
+         config/ \
          hw_dsp/ \
          bt_app/ \
          overlay/ \
