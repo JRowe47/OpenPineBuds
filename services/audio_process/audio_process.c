@@ -53,6 +53,7 @@ Audio Flow:
 #include "audio_cfg.h"
 #include "audiogram.h"
 #include "drc.h"
+#include "dsp_chain.h"
 #include "hal_cmu.h"
 #include "hal_location.h"
 #include "hal_timer.h"
@@ -61,6 +62,8 @@ Audio Flow:
 #include "hw_codec_iir_process.h"
 #include "hw_iir_process.h"
 #include "limiter.h"
+#include "math.h"
+#include <limits.h>
 #include "stdbool.h"
 #include "string.h"
 #include "tgt_hardware.h"
@@ -299,6 +302,57 @@ static AUDIO_PROCESS_T audio_process = {
 #endif
 };
 
+static const char *DSP_CHAIN_ORDER[] = {"calibration_eq", "audiogram_eq",
+                                        "mode_overlay", "compressor",
+                                        "limiter"};
+static DspChainState g_dsp_chain;
+
+static void audio_process_apply_block_gain(uint8_t *buf, uint32_t samples,
+                                           enum AUD_BITS_T bits,
+                                           float linear_gain) {
+  if (!buf || samples == 0)
+    return;
+
+  if (fabsf(linear_gain - 1.0f) < 0.0001f)
+    return;
+
+  uint32_t clipped = 0;
+
+  if (bits == AUD_BITS_16) {
+    int16_t *pcm = (int16_t *)buf;
+    for (uint32_t i = 0; i < samples; ++i) {
+      int32_t v = (int32_t)((float)pcm[i] * linear_gain);
+      if (v > INT16_MAX) {
+        v = INT16_MAX;
+        clipped++;
+      } else if (v < INT16_MIN) {
+        v = INT16_MIN;
+        clipped++;
+      }
+      pcm[i] = (int16_t)v;
+    }
+  } else if (bits == AUD_BITS_24) {
+    int32_t *pcm = (int32_t *)buf;
+    const int32_t max24 = 0x7FFFFF;
+    const int32_t min24 = -0x800000;
+    for (uint32_t i = 0; i < samples; ++i) {
+      int64_t v = (int64_t)((float)pcm[i] * linear_gain);
+      if (v > max24) {
+        v = max24;
+        clipped++;
+      } else if (v < min24) {
+        v = min24;
+        clipped++;
+      }
+      pcm[i] = (int32_t)v;
+    }
+  }
+
+  if (clipped > 0) {
+    dsp_chain_mark_clipping(&g_dsp_chain, clipped);
+  }
+}
+
 int audio_eq_set_cfg(const FIR_CFG_T *fir_cfg, const IIR_CFG_T *iir_cfg,
                      AUDIO_EQ_TYPE_T audio_eq_type) {
 #if defined(__SW_IIR_EQ_PROCESS__) || defined(__HW_FIR_EQ_PROCESS__) ||        \
@@ -435,6 +489,10 @@ int SRAM_TEXT_LOC audio_process_run(uint8_t *buf, uint32_t len) {
            audio_process.sw_ch_num, audio_process.hw_ch_num);
   }
 
+  float block_gain = dsp_chain_begin_frame(&g_dsp_chain, pcm_len);
+  audio_process_apply_block_gain(buf, pcm_len, audio_process.sample_bits,
+                                 block_gain);
+
 #ifdef AUDIO_PROCESS_DUMP
   int *buf32 = (int *)buf;
   for (int i = 0; i < 1024; i++)
@@ -481,6 +539,7 @@ int SRAM_TEXT_LOC audio_process_run(uint8_t *buf, uint32_t len) {
 #endif
 
   limiter_process(audio_process.drc2_st, buf, pcm_len);
+  dsp_chain_mark_limiter(&g_dsp_chain);
 #endif
 
 #ifdef __HW_IIR_EQ_PROCESS__
@@ -525,6 +584,7 @@ int SRAM_TEXT_LOC audio_process_run(uint8_t *buf, uint32_t len) {
   //    __func__, pcm_len, FAST_TICKS_TO_US(m_time - s_time),
   //    FAST_TICKS_TO_US(e_time - m_time));
 
+  dsp_chain_finish_frame(&g_dsp_chain);
   return 0;
 }
 
@@ -1154,6 +1214,10 @@ int audio_cfg_burn_callback(uint8_t *buf, uint32_t len) {
 #endif
 
 int audio_process_init(void) {
+  bool limiter_last = dsp_chain_init(
+      &g_dsp_chain, DSP_CHAIN_ORDER,
+      sizeof(DSP_CHAIN_ORDER) / sizeof(DSP_CHAIN_ORDER[0]), 3.0f);
+  ASSERT(limiter_last, "[%s] limiter must be final stage", __func__);
   config_protocol_init();
 #ifdef __PC_CMD_UART__
   hal_cmd_init();
@@ -1277,4 +1341,16 @@ int audio_process_apply_audiogram(const AudiogramProfile *profile) {
 
   return 0;
 #endif
+}
+
+void audio_process_request_ramp(float target_gain_db, uint32_t frame_count) {
+  dsp_chain_request_ramp(&g_dsp_chain, target_gain_db, frame_count);
+}
+
+void audio_process_force_panic_off(void) {
+  dsp_chain_force_mute(&g_dsp_chain);
+}
+
+void audio_process_get_telemetry(DspChainCounters *out) {
+  dsp_chain_get_counters(&g_dsp_chain, out);
 }

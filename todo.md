@@ -13,9 +13,9 @@ Combined backlog sourced from the previous to-do lists, feature specs (A–K), a
 - [x] Document request/response formats and error handling for the companion protocol.
 
 ## M2 — DSP Core, Limiter, & Ramps (Feature C)
-- [ ] Build shared DSP chain (calibration EQ → audiogram EQ → mode overlay → compressors/NR → limiter) within the audio pipeline.
-- [ ] Enforce limiter-last ordering and add telemetry counters (CPU, underflow/overflow, clipping/limiter events).
-- [ ] Implement gain ramps and headroom offsets for mode/config updates; ensure panic-off bypasses ramps for instant mute.
+- [x] Build shared DSP chain (calibration EQ → audiogram EQ → mode overlay → compressors/NR → limiter) within the audio pipeline.
+- [x] Enforce limiter-last ordering and add telemetry counters (CPU, underflow/overflow, clipping/limiter events).
+- [x] Implement gain ramps and headroom offsets for mode/config updates; ensure panic-off bypasses ramps for instant mute.
 
 ## M3 — Arbitrary Audiogram Points Applied to A2DP + Call Downlink (Feature B)
 - [x] Update audiogram configuration schema to support arbitrary per-ear frequency lists with versioned migration guidance.

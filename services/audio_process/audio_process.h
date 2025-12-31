@@ -24,6 +24,7 @@ extern "C" {
 #include "iir_process.h"
 #include "fir_process.h"
 #include "audiogram.h"
+#include "dsp_chain.h"
 
 typedef enum {
     AUDIO_EQ_TYPE_SW_IIR = 0,
@@ -43,6 +44,11 @@ int audio_eq_set_cfg(const FIR_CFG_T *fir_cfg,const IIR_CFG_T *iir_cfg,AUDIO_EQ_
 // and translated into per-ear IIR configurations using log-frequency
 // interpolation and smoothing. Returns 0 on success.
 int audio_process_apply_audiogram(const AudiogramProfile *profile);
+
+// Ramping + telemetry helpers for the DSP chain.
+void audio_process_request_ramp(float target_gain_db, uint32_t frame_count);
+void audio_process_force_panic_off(void);
+void audio_process_get_telemetry(DspChainCounters *out);
 
 #ifdef USB_EQ_TUNING
 void audio_eq_usb_eq_update (void);
