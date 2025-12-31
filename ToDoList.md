@@ -4,6 +4,7 @@ Combined backlog sourced from the previous to-do lists, feature specs (A–K), a
 
 ## M0 — Baseline Build/Flash & Logging
 - [x] Verify `build.sh`/`Makefile` outputs the expected firmware image; document exact target and toolchain versions (see build verification notes in `documentation.md`).
+- [x] Add build-time preflight for toolchain/audio converter dependencies (`arm-none-eabi-*`, `ffmpeg`, `xxd`) to avoid noisy failures.
 - [ ] Enable logging for audio pipelines; confirm `PANIC_OFF` command path works over UART/USB and/or BLE console.
 
 ## M1 — Config Store, Schemas, & Transport Stubs (Feature A/K)

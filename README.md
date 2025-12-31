@@ -5,6 +5,12 @@ The docker image will build bestool for you first, then drop you into the dev co
 
 NOTE: Currently, the SDK is not licensed under an 'open source' license. We are working to resolve this issue, and will be reaching out to contributors and other parties soon. For now, consider this SDK as 'All Rights Reserved'/'shared source'.
 
+## Host prerequisites
+
+- ARM GNU toolchain (tested with `gcc-arm-none-eabi-9-2019-q4-major`) providing `arm-none-eabi-gcc`, `arm-none-eabi-g++`, and `arm-none-eabi-ar` on `PATH`.
+- Audio prompt converter dependencies: `ffmpeg` and `xxd` (the latter typically comes from the `vim-common` package).
+- The `build.sh` wrapper now fails fast with a clear message if any of the above are missing.
+
 ## Usage
 
 To use this setup to build & flash your PineBuds you will need a system with docker setup at the minimum.
