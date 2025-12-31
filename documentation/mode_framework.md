@@ -26,8 +26,9 @@ crossfade over 20–50 ms instead of stepping. Panic-off uses
 
 ## Mode presets
 
-The configuration exposes three media-focused presets. All values are capped by
-firmware safety limits and respect the shared headroom budget:
+The configuration exposes three media-focused presets and the additional M6
+voice-forward overlays. All values are capped by firmware safety limits and
+respect the shared headroom budget:
 
 - **Ambient**
   - `ambient_mix_ratio`: 0.35–0.55 linear mix of mic feed into media path.
@@ -51,6 +52,20 @@ firmware safety limits and respect the shared headroom budget:
   - Overlay EQ: presence-focused shaping (+3 dB @ 2 kHz, slight HF shelf) with
     no dynamic processing beyond the limiter.
 
+- **Conversation (M6)**
+  - `ambient_mix_ratio`: 0.30–0.40 with VAD-driven ducking of media.
+  - `wind_suppression`: enabled and paired with a low-latency NR tier.
+  - `overlay_eq`: presence lift (+2 to +4 dB from 1–4 kHz) and fast compressor
+    (attack 3–5 ms, release 80–120 ms, ratio up to 2.5:1) keeping headroom
+    reserved for limiter margin.
+
+- **Outdoors (M6)**
+  - `ambient_mix_ratio`: capped at 0.25 unless wind is clear for 300 ms.
+  - `wind_suppression`: enabled with higher HPF corners and NR biased toward
+    wind noise rejection.
+  - `overlay_eq`: HF shelves clamped to avoid hiss; mix ramps when wind state
+    changes to prevent pumping.
+
 Each preset stores an explicit headroom reservation (default 6 dB) that is
 applied before overlays so total gain plus limiter threshold stays within safe
 bounds.
@@ -60,7 +75,9 @@ bounds.
 - Mode switches update the overlay block pointer and request a gain ramp to the
   target overlay gain, keeping the limiter last.
 - Ambient mix ratios are applied after the overlay EQ and before any optional
-  compressor; mix changes are also ramped to avoid pumping.
+  compressor; mix changes are also ramped to avoid pumping. Conversation and
+  outdoors modes share the wind detector hook described in the ambient pipeline
+  notes to bump HPF and tighten NR when wind is detected.
 - The wind suppression hook reports detector state; when active it raises the
   HPF corner and reduces ambient mix by 3–6 dB.
 - Ducking uses the VAD flag from the ambient path to reduce media gain by the
@@ -93,6 +110,18 @@ bounds.
       "wind_suppression": true,
       "ducking": null,
       "overlay_eq": "eq_presets/theater_v1.json"
+    },
+    "conversation": {
+      "ambient_mix_ratio": 0.35,
+      "wind_suppression": true,
+      "ducking": { "depth_db": 4, "attack_ms": 30, "release_ms": 200 },
+      "overlay_eq": "eq_presets/conversation_v1.json"
+    },
+    "outdoors": {
+      "ambient_mix_ratio": 0.2,
+      "wind_suppression": true,
+      "ducking": null,
+      "overlay_eq": "eq_presets/outdoors_v1.json"
     }
   }
 }
@@ -110,6 +139,9 @@ an error.
 - **Music/theater overlays:** Per-mode EQ responses respect headroom (limiter
   engagement does not increase over baseline) and ambient mix caps are obeyed
   (theater disables ambient by default).
+- **Conversation/outdoors:** Presence lift and compression stay within latency
+  budget; HPF/NR changes follow wind hysteresis rules and avoid audible
+  pumping; limiter remains last with 6 dB reserved headroom.
 - **Transitions:** Mode changes complete within the configured ramp duration
   without clipping or limiter dropouts; telemetry confirms limiter remains the
   last stage in all paths.

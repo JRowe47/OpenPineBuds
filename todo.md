@@ -42,10 +42,10 @@ Combined backlog sourced from the previous to-do lists, feature specs (A–K), a
 - [ ] Validate panic-off disables ambient/tinnitus and keeps uplink unclipped; add call-mode tests/logs.
 
 ## M6 — Ambient Pipeline Improvements (Features E, G, H)
-- [ ] Implement wind detector with hysteresis (low-band energy/coherence) and adjust HPF/gain/NR thresholds.
-- [ ] Add speech-focused EQ and compression for conversational mode with minimal latency; tune outdoors mode for wind suppression and conservative HF gain caps.
-- [ ] Ensure wind suppression and NR avoid pumping; verify mode transitions are ramped and safe.
-- [ ] Improve NR/voice isolation tiers and optional cross-bud feature sharing hooks.
+- [x] Implement wind detector with hysteresis (low-band energy/coherence) and adjust HPF/gain/NR thresholds.
+- [x] Add speech-focused EQ and compression for conversational mode with minimal latency; tune outdoors mode for wind suppression and conservative HF gain caps.
+- [x] Ensure wind suppression and NR avoid pumping; verify mode transitions are ramped and safe.
+- [x] Improve NR/voice isolation tiers and optional cross-bud feature sharing hooks.
 
 ## M7 — Tinnitus Masker (Feature I)
 - [ ] Add masker generator (white/pink/band/notched) per bud with level caps, modulation, and fade-in/out; integrate default-off call policy and panic-off mute.
