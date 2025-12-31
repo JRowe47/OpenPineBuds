@@ -9,7 +9,7 @@
 - [x] Apply safety clamps/limiters after EQ to cap gains and preserve smooth transitions.
 - [x] Preserve backward compatibility so octave-only audiograms load unchanged; provide schema versioning and migration path.
 - [ ] Add regression tests for legacy octave-only audiograms and new non-octave cases (e.g., 750, 1500, 3000 Hz).
-- [ ] Document example configurations and validation errors for arbitrary frequency lists.
+- [x] Document example configurations and validation errors for arbitrary frequency lists.
 
 ## Performance & Reliability
 - [ ] Keep interpolation/smoothing lightweight (avoid heavy FFT paths) and cap per-ear point counts (e.g., max 32) to meet CPU/latency/memory budgets.
@@ -21,6 +21,6 @@
 - [ ] Add config schema tests that cover both valid and invalid cases (duplicates, unsorted points, out-of-range frequencies, length mismatches).
 
 ## Documentation
-- [ ] Update feature documentation to describe arbitrary audiogram support, validation rules, and safety constraints.
-- [ ] Include updated JSON examples illustrating arbitrary frequency lists and thresholds per ear.
-- [ ] Note compatibility expectations and safe operating ranges in user-facing docs.
+- [x] Update feature documentation to describe arbitrary audiogram support, validation rules, and safety constraints.
+- [x] Include updated JSON examples illustrating arbitrary frequency lists and thresholds per ear.
+- [x] Note compatibility expectations and safe operating ranges in user-facing docs.
