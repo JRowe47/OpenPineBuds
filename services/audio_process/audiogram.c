@@ -32,22 +32,36 @@ static float log10f_safe(float v) {
 
 bool audiogram_validate_ear(const AudiogramEarProfile *ear, char *reason,
                             size_t reason_size) {
+  uint8_t freq_count = 0;
+  uint8_t threshold_count = 0;
+
   if (!ear) {
     if (reason && reason_size)
       snprintf(reason, reason_size, "%s", "ear is NULL");
     return false;
   }
-  if (ear->point_count < MIN_POINTS_PER_EAR) {
+  freq_count = ear->point_count;
+  threshold_count =
+      ear->threshold_count ? ear->threshold_count : ear->point_count;
+
+  if (freq_count < MIN_POINTS_PER_EAR || threshold_count < MIN_POINTS_PER_EAR) {
     if (reason && reason_size)
       snprintf(reason, reason_size, "%s", "not enough points");
     return false;
   }
-  if (ear->point_count > AUDIOGRAM_MAX_POINTS_PER_EAR) {
+  if (freq_count > AUDIOGRAM_MAX_POINTS_PER_EAR ||
+      threshold_count > AUDIOGRAM_MAX_POINTS_PER_EAR) {
     if (reason && reason_size)
       snprintf(reason, reason_size, "%s", "too many points");
     return false;
   }
-  for (uint8_t i = 0; i < ear->point_count; ++i) {
+  if (freq_count != threshold_count) {
+    if (reason && reason_size)
+      snprintf(reason, reason_size, "%s", "frequency/threshold count mismatch");
+    return false;
+  }
+
+  for (uint8_t i = 0; i < freq_count; ++i) {
     const uint16_t f = ear->frequencies_hz[i];
     const int16_t t = ear->thresholds_db_hl[i];
     if (f < AUDIOGRAM_MIN_FREQ_HZ || f > AUDIOGRAM_MAX_FREQ_HZ) {
@@ -129,31 +143,35 @@ static void smooth_gain(float *gains, size_t count) {
 int audiogram_interpolate_gain(const AudiogramEarProfile *ear,
                                const float *target_freqs, size_t target_count,
                                float *out_gain_db) {
+  uint8_t point_count = 0;
+
   if (!ear || !target_freqs || !out_gain_db || target_count == 0)
     return -1;
   if (!audiogram_validate_ear(ear, NULL, 0))
     return -2;
+
+  point_count = ear->threshold_count ? ear->threshold_count : ear->point_count;
 
   for (size_t i = 0; i < target_count; ++i) {
     float tfreq = target_freqs[i];
     float tlog = log10f_safe(tfreq);
     float lower_gain = map_threshold_to_gain(ear->thresholds_db_hl[0]);
     float upper_gain = map_threshold_to_gain(
-        ear->thresholds_db_hl[ear->point_count - 1]);
+        ear->thresholds_db_hl[point_count - 1]);
     float lower_log = log10f_safe(ear->frequencies_hz[0]);
     float upper_log =
-        log10f_safe(ear->frequencies_hz[ear->point_count - 1]);
+        log10f_safe(ear->frequencies_hz[point_count - 1]);
 
     if (tfreq <= ear->frequencies_hz[0]) {
       out_gain_db[i] = lower_gain;
       continue;
     }
-    if (tfreq >= ear->frequencies_hz[ear->point_count - 1]) {
+    if (tfreq >= ear->frequencies_hz[point_count - 1]) {
       out_gain_db[i] = upper_gain;
       continue;
     }
 
-    for (uint8_t j = 1; j < ear->point_count; ++j) {
+    for (uint8_t j = 1; j < point_count; ++j) {
       uint16_t f0 = ear->frequencies_hz[j - 1];
       uint16_t f1 = ear->frequencies_hz[j];
       if (tfreq >= f0 && tfreq <= f1) {
