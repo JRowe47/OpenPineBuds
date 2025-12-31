@@ -51,6 +51,7 @@ Audio Flow:
 
 #include "audio_process.h"
 #include "audio_cfg.h"
+#include "audiogram.h"
 #include "drc.h"
 #include "hal_cmu.h"
 #include "hal_location.h"
@@ -1235,4 +1236,39 @@ int audio_process_init(void) {
 #endif
 
   return 0;
+}
+
+int audio_process_apply_audiogram(const AudiogramProfile *profile) {
+#if !defined(__SW_IIR_EQ_PROCESS__)
+  (void)profile;
+  return -1;
+#else
+  IIR_CFG_T left_cfg = {0};
+  IIR_CFG_T right_cfg = {0};
+
+  int ret = audiogram_build_iir_cfg(profile, true, &left_cfg);
+  if (ret)
+    return ret;
+  ret = audiogram_build_iir_cfg(profile, false, &right_cfg);
+  if (ret)
+    return ret;
+
+#ifdef AUDIO_EQ_SW_IIR_UPDATE_CFG
+  memcpy(&audio_process.sw_iir_cfg, &left_cfg, sizeof(IIR_CFG_T));
+  audio_process.sw_iir_enable = true;
+#ifdef AUDIO_UPDATE_CFG
+  audio_process.update_cfg = true;
+#endif
+#endif
+
+  // Apply per-ear curves; fall back to mono if stereo channels are not active.
+  if (audio_process.sw_ch_num >= AUD_CHANNEL_NUM_2) {
+    iir_set_cfg_ch(&left_cfg, AUD_CHANNEL_NUM_1);
+    iir_set_cfg_ch(&right_cfg, AUD_CHANNEL_NUM_2);
+  } else {
+    iir_set_cfg(&left_cfg);
+  }
+
+  return 0;
+#endif
 }
