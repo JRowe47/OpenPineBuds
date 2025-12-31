@@ -26,11 +26,11 @@ Combined backlog sourced from the previous to-do lists, feature specs (A–K), a
 - [x] Ensure base audiogram compensation feeds all listening modes (ambient, music, theater, conversation, calls, tinnitus masking) after per-bud calibration.
 - [x] Apply safety clamps/limiters after EQ to cap gains and preserve smooth transitions.
 - [x] Preserve backward compatibility so octave-only audiograms load unchanged; provide schema versioning and migration path.
-- [ ] Add regression tests for legacy octave-only audiograms and new non-octave cases (e.g., 750, 1500, 3000 Hz).
+- [x] Add regression tests for legacy octave-only audiograms and new non-octave cases (e.g., 750, 1500, 3000 Hz).
 - [x] Document example configurations and validation errors for arbitrary frequency lists.
-- [ ] Keep interpolation/smoothing lightweight (avoid heavy FFT paths) and cap per-ear point counts to meet CPU/latency/memory budgets.
-- [ ] Verify limiter remains active after EQ when arbitrary audiogram points are used.
-- [ ] Profile interpolation and fitting stages to confirm performance constraints are met.
+- [x] Keep interpolation/smoothing lightweight (avoid heavy FFT paths) and cap per-ear point counts to meet CPU/latency/memory budgets.
+- [x] Verify limiter remains active after EQ when arbitrary audiogram points are used.
+- [x] Profile interpolation and fitting stages to confirm performance constraints are met.
 
 ## M4 — Mode Framework (Ambient/Music/Theater) (Feature D)
 - [ ] Add mode overlay presets (ambient/music/theater) in configuration and pipeline switch logic, including ambient mix ratios, wind suppression hook, and ducking option.

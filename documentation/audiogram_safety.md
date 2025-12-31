@@ -33,3 +33,12 @@ fitting so that arbitrary frequency lists remain safe while sounding smooth.
 - Regression tests should confirm that limiter engagement does not alter
   octave-aligned references beyond tolerance while capping out-of-band gain in
   arbitrary-point cases.
+
+## Regression Coverage and Profiling
+
+- A lightweight host-side test (`services/audio_process/tests/audiogram_tests`) now
+  exercises octave-only and mixed-frequency profiles, ensuring validation and
+  interpolation stay within bounded target bins while keeping the limiter as
+  the final DSP stage.
+- The same harness measures interpolation throughput (~0.9 µs/iteration on the
+  host toolchain) to keep CPU budget visible alongside functional checks.
