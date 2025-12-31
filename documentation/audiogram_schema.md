@@ -47,6 +47,32 @@ maps to the numeric `schema_version` stored in `AudiogramProfile` (for example,
 5. Validate that all frequencies remain within 100–12000 Hz and are strictly
    increasing without duplicates.
 
+## Backward compatibility (v2 octave-only profiles)
+
+- v2 profiles that omit a `schema` string default to `audiogram/v2` and keep
+  their octave-spaced frequency lists. They load unchanged under the v3 parser
+  as long as the lists remain sorted, unique, and within 100–12000 Hz.
+- A v2 example (still valid under v3):
+
+  ```json
+  {
+    "schema": "audiogram/v2",
+    "left": {
+      "frequencies_hz": [125, 250, 500, 1000, 2000, 4000, 8000],
+      "thresholds_db_hl": [0, 5, 10, 15, 20, 25, 30]
+    },
+    "right": {
+      "frequencies_hz": [125, 250, 500, 1000, 2000, 4000, 8000],
+      "thresholds_db_hl": [2, 4, 8, 12, 18, 22, 28]
+    }
+  }
+  ```
+
+- To migrate the above to v3, change the `schema` string to
+  `"audiogram/v3"` and keep the octave points; the interpolation pipeline
+  yields the same response within tolerance while unlocking the option to add
+  non-octave points later.
+
 ## Application Across Listening Modes
 
 The firmware computes a single calibrated base compensation curve per ear from

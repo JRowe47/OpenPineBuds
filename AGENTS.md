@@ -15,7 +15,7 @@ This repository does not currently include nested agent instructions. Follow the
 - [x] Validation + schema versioning/migration
 - [x] Log-frequency interpolation + smoothing of target gain
 - [x] Fitting target gain to available EQ sections (IIR/biquads) per ear
-- [ ] Regression: standard octave-only audiograms remain supported and produce equivalent results
+- [x] Regression: standard octave-only audiograms remain supported and produce equivalent results
 
 ## Milestones
 - Add a milestone for “Arbitrary Audiogram Points Support” with acceptance criteria that include validation of arbitrary points, interpolation onto the DSP grid with smoothing, safe clamping of gains, and confirmation that legacy octave-only profiles behave the same as before.
