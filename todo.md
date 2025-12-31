@@ -3,7 +3,7 @@
 Combined backlog sourced from the previous to-do lists, feature specs (A–K), and milestone tracker (M0–M10). Completed items are preserved. Tasks are ordered to support a reasonable implementation progression for the new firmware.
 
 ## M0 — Baseline Build/Flash & Logging
-- [ ] Verify `build.sh`/`Makefile` outputs the expected firmware image; document exact target and toolchain versions.
+- [x] Verify `build.sh`/`Makefile` outputs the expected firmware image; document exact target and toolchain versions (see build verification notes in `documentation.md`).
 - [ ] Enable logging for audio pipelines; confirm `PANIC_OFF` command path works over UART/USB and/or BLE console.
 
 ## M1 — Config Store, Schemas, & Transport Stubs (Feature A/K)

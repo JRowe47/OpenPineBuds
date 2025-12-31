@@ -8,6 +8,13 @@ This repository contains the PineBuds SDK along with build scripts, firmware app
 - `Dockerfile`, `docker-compose.yml`: Container definitions for reproducible builds and access to serial flashing tools.
 - `notes.txt`: Project notes describing behaviors and change history.
 
+### Build verification and expected outputs (M0 task)
+- **Target**: The default firmware target invoked by `build.sh` is `T=open_source` (chip: `best2300p`, see `config/open_source/target.mk`).
+- **Toolchain**: Builds assume the ARM GNU toolchain from `gcc-arm-none-eabi-9-2019-q4-major` (installed in the dev container at `/src/gcc-arm-none-eabi-9-2019-q4-major/bin`, see `Dockerfile`).
+- **Command to run**: From the repository root, execute `./build.sh` (or `make -j"$(nproc)" T=open_source DEBUG=1` if you prefer direct invocation). The wrapper writes compiler output to `log.txt` and reports failures to the console.
+- **Expected artifacts**: Successful builds populate `out/open_source/` with `open_source.elf`, `open_source.bin` (flashable firmware image), `open_source.map`, `open_source.lst`, and related metadata (`open_source.str`, `build_info.o`, linker script copies). These names come from the root `Makefile` defaults where `IMAGE_FILE` is derived from the target name.
+- **If the toolchain is missing**: Use the provided Docker image (`docker compose run dev_env`) so `arm-none-eabi-gcc` 9-2019q4 is available on `PATH`. Outside the container, ensure the same toolchain version is installed before running the build.
+
 ## Application Layer (`apps/`)
 - `apps/main/`: Main application entry points and behavior orchestrators.
   - `apps.cpp`: Coordinates application initialization, power-on cases, and integration points for BLE, ANC, OTA, and TWS features.
