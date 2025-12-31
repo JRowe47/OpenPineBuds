@@ -1,6 +1,7 @@
 # Project Agent Notes
 
 This repository does not currently include nested agent instructions. Follow these guardrails when updating documentation and code.
+- Before starting work, review `ToDoList.md` and check items off as you complete them; add subtasks when new work is discovered.
 
 ## Configuration model
 - Audiogram inputs must accept any number of frequency points per ear (minimum of two).
