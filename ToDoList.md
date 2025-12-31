@@ -1,7 +1,7 @@
 # To-Do List
 
 ## Arbitrary Audiogram Points Support
-- [ ] Update audiogram configuration schema to support arbitrary per-ear frequency lists (version bump with migration guidance).
+- [x] Update audiogram configuration schema to support arbitrary per-ear frequency lists (version bump with migration guidance).
 - [ ] Enforce validation rules: strictly increasing, unique frequencies within 100–12000 Hz; threshold counts match frequencies; minimum two points per ear.
 - [ ] Implement log-frequency interpolation onto the internal DSP grid with smoothing to avoid sharp transitions.
 - [ ] Fit interpolated target gains into available EQ/biquad sections per ear.

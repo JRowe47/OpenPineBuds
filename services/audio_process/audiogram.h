@@ -10,6 +10,8 @@
 extern "C" {
 #endif
 
+#define AUDIOGRAM_SCHEMA_VERSION 3
+#define AUDIOGRAM_MIN_SCHEMA_VERSION 2
 #define AUDIOGRAM_MAX_POINTS_PER_EAR 32
 #define AUDIOGRAM_MIN_FREQ_HZ 100
 #define AUDIOGRAM_MAX_FREQ_HZ 12000
@@ -21,7 +23,10 @@ typedef struct {
 } AudiogramEarProfile;
 
 typedef struct {
-  uint8_t schema_version; // bump when adding fields
+  // Schema version corresponds to the numeric suffix of the config string
+  // (e.g., "audiogram/v3" -> schema_version = 3). Versions 2–3 are
+  // accepted, and 0 indicates an unspecified legacy profile.
+  uint8_t schema_version;
   AudiogramEarProfile left;
   AudiogramEarProfile right;
 } AudiogramProfile;
