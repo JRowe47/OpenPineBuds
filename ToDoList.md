@@ -8,10 +8,10 @@ Combined backlog sourced from the previous to-do lists, feature specs (A–K), a
 - [ ] Enable logging for audio pipelines; confirm `PANIC_OFF` command path works over UART/USB and/or BLE console.
 
 ## M1 — Config Store, Schemas, & Transport Stubs (Feature A/K)
-- [ ] Implement per-bud persistent store with CRC, atomic commit, and rollback in the `config/` layer.
-- [ ] Add schema version fields, migration hooks, and bounds for MAX_POINTS/section budgets in validation helpers.
-- [ ] Stub transport commands (`GET_DEVICE_INFO`, `GET_CONFIG`, `SET_CONFIG` chunked, `APPLY_TEMP`, `COMMIT`, `ROLLBACK`, `PANIC_OFF`) in UART/BLE command handlers.
-- [ ] Document request/response formats and error handling for the companion protocol.
+- [x] Implement per-bud persistent store with CRC, atomic commit, and rollback in the `config/` layer.
+- [x] Add schema version fields, migration hooks, and bounds for MAX_POINTS/section budgets in validation helpers.
+- [x] Stub transport commands (`GET_DEVICE_INFO`, `GET_CONFIG`, `SET_CONFIG` chunked, `APPLY_TEMP`, `COMMIT`, `ROLLBACK`, `PANIC_OFF`) in UART/BLE command handlers.
+- [x] Document request/response formats and error handling for the companion protocol.
 
 ## M2 — DSP Core, Limiter, & Ramps (Feature C)
 - [ ] Build shared DSP chain (calibration EQ → audiogram EQ → mode overlay → compressors/NR → limiter) within the audio pipeline.

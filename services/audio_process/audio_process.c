@@ -57,6 +57,7 @@ Audio Flow:
 #include "hal_location.h"
 #include "hal_timer.h"
 #include "hal_trace.h"
+#include "config_protocol.h"
 #include "hw_codec_iir_process.h"
 #include "hw_iir_process.h"
 #include "limiter.h"
@@ -1153,6 +1154,7 @@ int audio_cfg_burn_callback(uint8_t *buf, uint32_t len) {
 #endif
 
 int audio_process_init(void) {
+  config_protocol_init();
 #ifdef __PC_CMD_UART__
   hal_cmd_init();
 
@@ -1190,6 +1192,8 @@ int audio_process_init(void) {
 
   hal_cmd_register("cmd", audio_cmd_callback);
   hal_cmd_register("ping", audio_ping_callback);
+
+  config_protocol_register_uart();
 #endif
 
 #ifdef USB_EQ_TUNING
@@ -1203,6 +1207,8 @@ int audio_process_init(void) {
 
   hal_cmd_register("cmd", audio_cmd_callback);
   hal_cmd_register("ping", audio_ping_callback);
+
+  config_protocol_register_uart();
 
 #endif
 
